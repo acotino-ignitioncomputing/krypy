@@ -1699,7 +1699,7 @@ def gap(lamda, sigma, mode="individual"):
         # is a sigma value in lamda interval?
         if not numpy.all(sigma_lo + sigma_hi):
             return None
-        delta = numpy.Infinity
+        delta = numpy.inf
         if numpy.any(sigma_lo):
             delta = lamda_min - numpy.max(sigma[sigma_lo])
         if numpy.any(sigma_hi):
