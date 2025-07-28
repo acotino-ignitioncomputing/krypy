@@ -1,4 +1,4 @@
-from . import deflation, linsys, recycling, utils
+from . import deflation, linsys, recycling, utils, _compat
 from .__about__ import __version__
 from ._convenience import cg, gmres, minres
 
@@ -11,4 +11,5 @@ __all__ = [
     "minres",
     "gmres",
     "__version__",
+    "_compat",
 ]
