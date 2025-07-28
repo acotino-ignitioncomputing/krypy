@@ -16,7 +16,7 @@ import scipy.linalg.blas as blas
 from scipy.sparse import isspmatrix
 
 # from scipy.sparse.linalg import LinearOperator, aslinearoperator
-from krypy._compat import isintlike
+from krypy._compat import isintlike, find_common_dtype
 
 __all__ = [
     "ArgumentError",
@@ -101,25 +101,6 @@ class InnerProductError(Exception):
 
 class RuntimeError(Exception):
     """Raised for errors that do not fit in any other exception."""
-
-
-def find_common_dtype(*args):
-    """Returns common dtype of numpy and scipy objects.
-
-    Recognizes ndarray, spmatrix and LinearOperator. All other objects are
-    ignored (most notably None)."""
-    dtypes = []
-    for arg in args:
-        if (
-            type(arg) is numpy.ndarray
-            or isspmatrix(arg)
-            or isinstance(arg, LinearOperator)
-        ):
-            if hasattr(arg, "dtype"):
-                dtypes.append(arg.dtype)
-            else:
-                warnings.warn("object %s does not have a dtype." % arg.__repr__)
-    return numpy.find_common_type(dtypes, [])
 
 
 def shape_vec(x):
@@ -639,7 +620,7 @@ class Projection(object):
 
     def _get_operator(self, fun, fun_adj):
         N = self.V.shape[0]
-        t = numpy.find_common_type([self.V.dtype, self.W.dtype], [])
+        t = find_common_dtype([self.V.dtype, self.W.dtype], [])
         return LinearOperator((N, N), t, fun, fun_adj)
 
     def operator(self):
@@ -1462,7 +1443,7 @@ def _get_dtype(operators, dtypes=None):
     for obj in operators:
         if obj is not None and hasattr(obj, "dtype"):
             dtypes.append(obj.dtype)
-    return numpy.find_common_type(dtypes, [])
+    return find_common_dtype(dtypes, [])
 
 
 class _SumLinearOperator(LinearOperator):

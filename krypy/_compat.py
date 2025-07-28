@@ -23,22 +23,18 @@ def find_common_dtype(*args):
     """
     dtypes = []
     for arg in args:
-        if arg is not None and hasattr(arg, "dtype"):
-            dtypes.append(arg.dtype)
-
-    if not dtypes:
-        return numpy.dtype(numpy.float64)
+        if type(arg) is list:
+            # In case entry in args is a list of objects, add list to dtypes
+            dtypes = dtypes + arg
+        else:
+            dtypes.append(arg)
 
     # Try numpy 2.0+ approach first
     try:
         return numpy.result_type(*dtypes)
     except (AttributeError, TypeError):
         # Fall back to numpy < 2.0 approach
-        try:
-            return numpy.find_common_type(dtypes, [])
-        except (AttributeError, TypeError):
-            # Ultimate fallback - just use the first dtype
-            return dtypes[0] if dtypes else numpy.dtype(numpy.float64)
+        return numpy.find_common_type(dtypes, [])
 
 
 def isintlike(x):

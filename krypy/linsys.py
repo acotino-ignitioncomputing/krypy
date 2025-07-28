@@ -5,6 +5,9 @@ import scipy.linalg
 
 from . import utils
 
+from krypy._compat import find_common_dtype
+
+
 __all__ = ["LinearSystem", "Cg", "Minres", "Gmres"]
 
 
@@ -111,9 +114,14 @@ class LinearSystem(object):
         if self_adjoint and not normal:
             raise utils.ArgumentError("self-adjointness implies normality")
 
-        # get common dtype
-        self.dtype = utils.find_common_dtype(
-            self.A, self.b, self.M, self.Ml, self.Mr, self.ip_B
+        # get common dtype. In case self.ip_B has no dtype, pass dtype of self.A
+        self.dtype = find_common_dtype(
+            self.A.dtype,
+            self.b.dtype,
+            self.M.dtype,
+            self.Ml.dtype,
+            self.Mr.dtype,
+            self.ip_B.dtype if hasattr(self.ip_B, "dtype") else self.A.dtype,
         )
 
         # Compute M^{-1}-norm of M*Ml*b.
@@ -367,9 +375,7 @@ class _KrylovSolver(object):
         """Approximate solution."""
 
         # find common dtype
-        self.dtype = numpy.find_common_type(
-            [linear_system.dtype, self.x0.dtype, dtype], []
-        )
+        self.dtype = find_common_dtype([linear_system.dtype, self.x0.dtype, dtype], [])
 
         # store operator (can be modified in derived classes)
         self.MlAMr = linear_system.MlAMr
