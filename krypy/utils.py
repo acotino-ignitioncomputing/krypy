@@ -235,7 +235,8 @@ def get_linearoperator(shape, A, timer=None):
     elif isinstance(A, scipylinalg.LinearOperator):
         if not hasattr(A, "dtype"):
             raise ArgumentError("scipy LinearOperator has no dtype.")
-        ret = LinearOperator(A.shape, dot=A.matvec, dot_adj=A.rmatvec, dtype=A.dtype)
+        # ret = LinearOperator(A.shape, dot=A.matvec, dot_adj=A.rmatvec, dtype=A.dtype)
+        ret = LinearOperator(A.shape, dot=A.dot, dot_adj=A.rmatvec, dtype=A.dtype)
     else:
         raise TypeError("type not understood")
 
