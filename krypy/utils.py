@@ -1369,6 +1369,9 @@ class LinearOperator(object):
             raise LinearOperatorError("dot undefined")
         if X.shape[1] == 0:
             return numpy.zeros(X.shape)
+        if X.dtype == numpy.complex128 and (X.imag == 0).all():
+            # extremeley dirty quick fix for arising complex numbers with imag=0
+            X = X.real
         return self._dot(X)
 
     def dot_adj(self, X):
